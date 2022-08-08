@@ -1,13 +1,13 @@
 from http import client
 import os
 import random
-import numpy as np
+import crazyDiscordBot_token
 import discord
 #from discord.ext import commands
 
 BOT_PREFIX = ("?", "!")
-TOKEN = "TOKEN TOKEN TOKEN TOKEN TOKEN TOKEN TOKENT TOUKUNN TOKEN TOKEN TOKEN TOKEN DATTE ITTE IRUNN DAYO !"
-
+TOKEN = crazyDiscordBot_token.token
+client = discord.Client()
 #client = commands.Bot(command_prefix=BOT_PREFIX)
 
 # リプライ時の返答(実行テスト)
@@ -19,3 +19,5 @@ async def reply(message):
 async def on_message(message):
     if client.user in message.mentions:
         await reply(message)
+
+client.run(TOKEN)
