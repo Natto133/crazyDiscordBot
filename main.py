@@ -12,12 +12,19 @@ client = discord.Client()
 
 # リプライ時の返答(実行テスト)
 async def reply(message):
-    reply = f'{message.author.mention}なんだい？ぼくを呼ぶなんて珍しいじゃないか。\nでも、忘れないで。ぼくは一生きみの友だちだよ！'
+    reply = f'{message.author.mention}なんだい？ぼくを呼ぶなんて珍しいじゃないか。\nでも、忘れないで。ぼくは一生きみの友だちだよ！(v0.1.2)'
     await message.channel.send(reply)
 
 @client.event
 async def on_message(message):
     if client.user in message.mentions:
         await reply(message)
+
+@client.event
+async def on_message(message):
+    if message.author.bot:
+        return
+    if message.content == "ワロタ":
+        await message.channel.send(f"{message.author.mention}\n＿人人人人人人人人人人人人人人人人人人人人＿\n＞　ワロタンゴタンバリンシャンシャン半島　＜\n￣Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y￣")
 
 client.run(TOKEN)
