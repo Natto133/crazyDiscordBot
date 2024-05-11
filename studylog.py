@@ -6,6 +6,7 @@ from discord.ext import commands
 class StudyLog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.start_dt = {}
         print("StudyLog init")
 
     def get_dt_now(self):
@@ -14,7 +15,7 @@ class StudyLog(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        await ctx.send("test!")
+        await ctx.send(f"test!{ctx.author.id}")
 
     @commands.command()
     async def call (self, ctx):
@@ -23,7 +24,11 @@ class StudyLog(commands.Cog):
 
     @commands.command()
     async def start(self, ctx, arg):
-        await ctx.send(f"{arg}を始めました！ [{self.get_dt_now()}]")
+        key = str(ctx.author.id) + arg
+        now = self.get_dt_now()
+        self.start_dt[key] = now
+        msg = f"{arg}を始めました！ [{now}]"
+        await ctx.send(msg)
 
     @commands.command()
     async def pause(self, ctx, arg):
@@ -35,7 +40,13 @@ class StudyLog(commands.Cog):
 
     @commands.command()
     async def finish(self, ctx, arg):
-        await ctx.send(f"{arg}を終えました！ [{self.get_dt_now()}]")
+        key = str(ctx.author.id) + arg
+        now = self.get_dt_now()
+        elapsed_time = datetime.datetime.strptime(now, "%Y/%m/%d %H:%M:%S") - datetime.datetime.strptime(self.start_dt[key], "%Y/%m/%d %H:%M:%S")
+
+        msg = f"{arg}を終えました！ [{now}]"
+        msg += f"\n時間：{elapsed_time}"
+        await ctx.send(msg)
 
 async def setup(bot):
     await bot.add_cog(StudyLog(bot))
