@@ -1,4 +1,15 @@
-# Versions
+# 俺の使用人Bot
+
+## ToDo
+
+- 記録の保存を二重配列化  
+- 記録のバックアップ(ファイル)  
+- DBに保存  
+- oha/oyasu機能(今日の記録のリセット、Result表示)
+- ohayoメッセージ機能
+- should_sleepの実装(寝る時間が近いときのメッセージ返答)
+
+## Versions
 
 Python 3.12.2
 
@@ -15,7 +26,7 @@ pip           24.0
 python-dotenv 1.0.1
 yarl          1.9.4
 
-# .env
+## .env
 
 ```.env
 TOKEN = DISCORDTOKEN
