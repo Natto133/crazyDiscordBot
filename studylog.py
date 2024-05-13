@@ -38,7 +38,7 @@ class StudyLog(commands.Cog):
 
     def should_sleep(self):
         now_time = datetime.datetime.now().time()
-        bed_time = datetime.time(2)
+        bed_time = datetime.time(22)
         wakeup_time = datetime.time(3)
         if bed_time < now_time or now_time < wakeup_time:
             return True
