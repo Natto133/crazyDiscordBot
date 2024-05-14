@@ -66,6 +66,7 @@ class StudyLog(commands.Cog):
     @commands.command()
     async def ohayo(self, ctx):
         self.total_time.pop(ctx.author.id)
+        self.total_time.setdefault(ctx.author.id, datetime.timedelta())
 
         msg = ctx.author.mention
         msg += self.get_msg(ctx.author.id, "mention")
