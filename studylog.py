@@ -6,6 +6,7 @@ class StudyLog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.start_dt = {}
+        self.total_time = {} # {00000(uid): datetime.time,}
         self.msgs = {
                 0: {
                     "under_development": "（この機能は開発中です。）",
@@ -48,7 +49,7 @@ class StudyLog(commands.Cog):
     def show_today_result(self, userid):
         # msg = self.start_dt[userid]
 
-        msg = self.get_msg(0, "under_development")
+        msg = str(self.total_time[userid])
         return msg
 
     @commands.command()
@@ -64,6 +65,8 @@ class StudyLog(commands.Cog):
 
     @commands.command()
     async def ohayo(self, ctx):
+        self.total_time.pop(ctx.author.id)
+
         msg = ctx.author.mention
         msg += self.get_msg(ctx.author.id, "mention")
         msg += self.get_msg(ctx.author.id, "good_morning")
@@ -72,9 +75,13 @@ class StudyLog(commands.Cog):
     @commands.command()
     async def oyasumi(self, ctx):
         result = self.show_today_result(ctx.author.id)
+
         msg = ctx.author.mention
         msg += self.get_msg(ctx.author.id, "mention")
         msg += self.get_msg(ctx.author.id, "good_night")
+        msg += "\n\n"
+        msg += self.get_msg(ctx.author.id, "todays_result")
+        msg += result
         await ctx.send(msg)
 
     @commands.command()
@@ -82,6 +89,7 @@ class StudyLog(commands.Cog):
         key = str(ctx.author.id) + arg
         now = self.get_dt_now()
         self.start_dt[key] = now
+
         msg = arg
         msg += self.get_msg(ctx.author.id, "start")
         msg += f"  [{now}]"
@@ -112,6 +120,8 @@ class StudyLog(commands.Cog):
         key = str(ctx.author.id) + arg
         now = self.get_dt_now()
         elapsed_time = datetime.datetime.strptime(now, "%Y/%m/%d %H:%M:%S") - datetime.datetime.strptime(self.start_dt[key], "%Y/%m/%d %H:%M:%S")
+        self.total_time.setdefault(ctx.author.id, datetime.timedelta())
+        self.total_time[ctx.author.id] += elapsed_time
 
         msg = arg
         msg += self.get_msg(ctx.author.id, "finish")
