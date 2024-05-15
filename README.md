@@ -8,6 +8,8 @@
 - oha/oyasu機能(今日の記録のリセット、Result表示)
 - ohayoメッセージ機能
 - should_sleepの実装(寝る時間が近いときのメッセージ返答)
+- slash commands にする
+- 型のアノテーションつける(つけられるっぽい）
 
 ## Versions
 
