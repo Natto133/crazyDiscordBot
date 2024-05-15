@@ -1,5 +1,6 @@
 from dotenv import dotenv_values
 import datetime
+import discord
 from discord.ext import commands
 
 class StudyLog(commands.Cog):
@@ -29,7 +30,7 @@ class StudyLog(commands.Cog):
         now = datetime.datetime.today()
         return now.strftime("%Y/%m/%d %H:%M:%S")
 
-    def get_msg(self, userid, msgid):
+    def get_msg(self, userid:int, msgid:str):
         if userid in self.msgs :
             if msgid in self.msgs[userid] :
                 return self.msgs[userid][msgid]
@@ -46,25 +47,25 @@ class StudyLog(commands.Cog):
         else:
             return False
 
-    def show_today_result(self, userid):
+    def show_today_result(self, userid:int):
         # msg = self.start_dt[userid]
 
         msg = str(self.total_time[userid])
         return msg
 
     @commands.command()
-    async def test(self, ctx):
+    async def test(self, ctx: commands.Context):
         msg = f"test!{ctx.author.id}"
         await ctx.send(msg)
 
 
     @commands.command()
-    async def call (self, ctx):
+    async def call (self, ctx: commands.Context):
         print("called")
         await ctx.send(self.get_msg(ctx.author.id, "called"))
 
     @commands.command()
-    async def ohayo(self, ctx):
+    async def ohayo(self, ctx: commands.Context):
         self.total_time.pop(ctx.author.id)
         self.total_time.setdefault(ctx.author.id, datetime.timedelta())
 
@@ -74,7 +75,7 @@ class StudyLog(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def oyasumi(self, ctx):
+    async def oyasumi(self, ctx: commands.Context):
         result = self.show_today_result(ctx.author.id)
 
         msg = ctx.author.mention
@@ -86,7 +87,7 @@ class StudyLog(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def start(self, ctx, arg):
+    async def start(self, ctx: commands.Context, arg: str):
         key = str(ctx.author.id) + arg
         now = self.get_dt_now()
         self.start_dt[key] = now
@@ -101,7 +102,7 @@ class StudyLog(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def pause(self, ctx, arg):
+    async def pause(self, ctx: commands.Context, arg: str):
         now = self.get_dt_now()
         msg = arg
         msg += self.get_msg(ctx.author.id, "pause")
@@ -109,7 +110,7 @@ class StudyLog(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def restart(self, ctx, arg):
+    async def restart(self, ctx: commands.Context, arg :str):
         now = self.get_dt_now()
         msg = arg
         msg += self.get_msg(ctx.author.id, "restart")
@@ -117,7 +118,7 @@ class StudyLog(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def finish(self, ctx, arg):
+    async def finish(self, ctx: commands.Context, arg: str):
         key = str(ctx.author.id) + arg
         now = self.get_dt_now()
         elapsed_time = datetime.datetime.strptime(now, "%Y/%m/%d %H:%M:%S") - datetime.datetime.strptime(self.start_dt[key], "%Y/%m/%d %H:%M:%S")
