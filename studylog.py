@@ -15,16 +15,16 @@ class StudyLog(commands.Cog):
         self.start_dt: Dict[str, str] = {} # {title: start date time"%Y/%m/%d %H:%M:%S"}
         self.total_time: Dict[int, datetime.timedelta] = {}   # {00000(uid): datetime.time,}
 
-        self.con = sqlite3.connect("./log.db")
-        self.cur = self.con.cursor()
-        self.cur.execute("""
+        con = sqlite3.connect("./log.db")
+        con.execute("""
             CREATE TABLE IF NOT EXISTS log(
-                id INTEGER,
+                id INTEGER PRIMARY KEY,
                 userid INTEGER,
                 title TEXT,
-                status INTEGER,
+                status_id INTEGER,
                 datetime TEXT
             )""")
+        con.close()
 
         self.msgs = {
                 0: {
@@ -44,9 +44,28 @@ class StudyLog(commands.Cog):
 
         print("StudyLog init")
 
+
     def get_dt_now(self):
         now = datetime.datetime.today()
         return now.strftime("%Y/%m/%d %H:%M:%S")
+
+
+    def insert_log(self, userid: int, title: str, status_id: int, datetime: str):
+        con = sqlite3.connect("./log.db")
+        con.execute("""INSERT INTO log
+                (userid, title, status_id, datetime) VALUES(?, ?, ?, ?)""",
+                (userid, title, status_id, datetime)
+            )
+        con.commit()
+        con.close()
+
+
+    # def select_log(self, ):
+    #     con = sqlite3.connect("file:log.db?mode=ro", uri=True)
+    #     res = con.execute("SELECT * FROM log")
+    #     res.fetchall()
+    #     con.close()
+
 
     def get_msg(self, userid:int, msgid:str):
         # 登録済み
@@ -55,7 +74,6 @@ class StudyLog(commands.Cog):
                 return self.msgs[userid][msgid]
             else :
                 return self.msgs[0][msgid]
-
         # 未登録
         else :
             if msgid in self.msgs[0] :
@@ -63,20 +81,36 @@ class StudyLog(commands.Cog):
 
         return "message error"
 
+
     def should_sleep(self):
         now_time = datetime.datetime.now().time()
         bed_time = datetime.time(22)
         wakeup_time = datetime.time(3)
-        if bed_time < now_time or now_time < wakeup_time:
-            return True
-        else:
-            return False
+        # if bed_time < now_time or now_time < wakeup_time:
+        #     return True
+        # else:
+        #     return False
+        return bed_time < now_time or now_time < wakeup_time
+
 
     def show_today_result(self, userid:int):
-        # msg = self.start_dt[userid]
+        con = sqlite3.connect("file:log.db?mode=ro", uri=True)
+        res = con.execute("SELECT * FROM log WHERE userid=?", (str(userid),))
+        logs: List = res.fetchall()
+        con.close()
+
+        # datetimeをstrからdatetime.datetimeに変換
+        for i in range(len(logs)):
+            logs[i][4] = datetime.datetime.strptime(logs[i][4], "%Y/%m/%d %H:%M:%S")
+
+        # ToDo: logsの処理
 
         msg = str(self.total_time[userid])
+
         return msg
+
+
+    # ===以下、command===
 
     @commands.command()
     async def test(self, ctx: commands.Context):
@@ -89,6 +123,7 @@ class StudyLog(commands.Cog):
         print("called")
         await ctx.send(self.get_msg(ctx.author.id, "called"))
 
+
     @commands.command()
     async def ohayo(self, ctx: commands.Context):
         self.total_time.pop(ctx.author.id)
@@ -98,6 +133,7 @@ class StudyLog(commands.Cog):
         msg += self.get_msg(ctx.author.id, "mention")
         msg += self.get_msg(ctx.author.id, "good_morning")
         await ctx.send(msg)
+
 
     @commands.command()
     async def oyasumi(self, ctx: commands.Context):
@@ -111,11 +147,14 @@ class StudyLog(commands.Cog):
         msg += result
         await ctx.send(msg)
 
+
     @commands.command()
     async def start(self, ctx: commands.Context, arg: str):
         key = str(ctx.author.id) + arg
         now = self.get_dt_now()
         self.start_dt[key] = now
+
+        self.insert_log(ctx.author.id, arg, 1, now)
 
         msg = arg
         msg += self.get_msg(ctx.author.id, "start")
@@ -126,21 +165,30 @@ class StudyLog(commands.Cog):
             msg += self.get_msg(ctx.author.id, "too_late")
         await ctx.send(msg)
 
+
     @commands.command()
     async def pause(self, ctx: commands.Context, arg: str):
         now = self.get_dt_now()
+
+        self.insert_log(ctx.author.id, arg, 3, now)
+
         msg = arg
         msg += self.get_msg(ctx.author.id, "pause")
         msg += f"  [{now}]"
         await ctx.send(msg)
 
+
     @commands.command()
     async def restart(self, ctx: commands.Context, arg :str):
         now = self.get_dt_now()
+
+        self.insert_log(ctx.author.id, arg, 4, now)
+
         msg = arg
         msg += self.get_msg(ctx.author.id, "restart")
         msg += f"  [{now}]"
         await ctx.send(msg)
+
 
     @commands.command()
     async def finish(self, ctx: commands.Context, arg: str):
@@ -149,6 +197,8 @@ class StudyLog(commands.Cog):
         elapsed_time = datetime.datetime.strptime(now, "%Y/%m/%d %H:%M:%S") - datetime.datetime.strptime(self.start_dt[key], "%Y/%m/%d %H:%M:%S")
         self.total_time.setdefault(ctx.author.id, datetime.timedelta())
         self.total_time[ctx.author.id] += elapsed_time
+
+        self.insert_log(ctx.author.id, arg, 2, now)
 
         msg = arg
         msg += self.get_msg(ctx.author.id, "finish")
@@ -160,6 +210,7 @@ class StudyLog(commands.Cog):
             msg += self.get_msg(ctx.author.id, "too_late")
 
         await ctx.send(msg)
+
 
 async def setup(bot):
     await bot.add_cog(StudyLog(bot))
