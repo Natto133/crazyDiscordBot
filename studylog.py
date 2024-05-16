@@ -1,13 +1,31 @@
+from typing import List, Dict, Final
 from dotenv import dotenv_values
 import datetime
+import sqlite3
 import discord
 from discord.ext import commands
 
 class StudyLog(commands.Cog):
+
+    STATUS_ID: Final[List[str]] = ["reset", "start", "finish", "pause", "restart", "interrupt"]
+
     def __init__(self, bot):
         self.bot = bot
-        self.start_dt = {}
-        self.total_time = {} # {00000(uid): datetime.time,}
+
+        self.start_dt: Dict[str, str] = {} # {title: start date time"%Y/%m/%d %H:%M:%S"}
+        self.total_time: Dict[int, datetime.timedelta] = {}   # {00000(uid): datetime.time,}
+
+        self.con = sqlite3.connect("./log.db")
+        self.cur = self.con.cursor()
+        self.cur.execute("""
+            CREATE TABLE IF NOT EXISTS log(
+                id INTEGER,
+                userid INTEGER,
+                title TEXT,
+                status INTEGER,
+                datetime TEXT
+            )""")
+
         self.msgs = {
                 0: {
                     "under_development": "（この機能は開発中です。）",
@@ -31,11 +49,18 @@ class StudyLog(commands.Cog):
         return now.strftime("%Y/%m/%d %H:%M:%S")
 
     def get_msg(self, userid:int, msgid:str):
+        # 登録済み
         if userid in self.msgs :
             if msgid in self.msgs[userid] :
                 return self.msgs[userid][msgid]
-        if msgid in self.msgs[0] :
-            return self.msgs[0][msgid]
+            else :
+                return self.msgs[0][msgid]
+
+        # 未登録
+        else :
+            if msgid in self.msgs[0] :
+                return self.msgs[0][msgid]
+
         return "message error"
 
     def should_sleep(self):

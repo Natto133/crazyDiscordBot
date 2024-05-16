@@ -27,15 +27,19 @@
 | status   | INTEGER | status_id | 1 |
 | datetime | TEXT    | strftime("%Y/%m/%d %H:%M:%S") | "2024/04/01 23:45:01" |
 
-#### status.table
+## Consts
 
-| status_id | category |
-| --------- | -------- |
-| 1      | "start"     |
-| 2      | "finish"    |
-| 3      | "pause"     |
-| 4      | "restart"   |
-| 5      | "interrupt" |
+### STATUS_ID
+
+STATUS_ID[i]
+
+| index | status   |
+| ----- | -------- |
+| 1     | "start"     |
+| 2     | "finish"    |
+| 3     | "pause"     |
+| 4     | "restart"   |
+| 5     | "interrupt" |
 
 ## Versions
 
