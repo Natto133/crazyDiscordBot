@@ -19,13 +19,13 @@
 
 #### log.table
 
-| key      | type    | describe | e.g. |
-| -------- | ------- | -------- | ---- |
-| id       | INTEGER | レコードID | 2 |
-| userid   | INTEGER | commands.Context.author.id | 000000000000000000|
-| title    | TEXT    | name of task | "赤チャ" |
-| status   | INTEGER | status_id | 1 |
-| datetime | TEXT    | strftime("%Y/%m/%d %H:%M:%S") | "2024/04/01 23:45:01" |
+| key       | type    | describe | e.g. |
+| --------- | ------- | -------- | ---- |
+| id        | INTEGER | レコードID | 2 |
+| userid    | INTEGER | commands.Context.author.id | 000000000000000000|
+| title     | TEXT    | name of task | "赤チャ" |
+| status_id | INTEGER | status_id | 1 |
+| datetime  | TEXT    | strftime("%Y/%m/%d %H:%M:%S") | "2024/04/01 23:45:01" |
 
 ## Consts
 

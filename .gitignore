@@ -1,3 +1,4 @@
 .vim
 .venv
 .env
+*.db
