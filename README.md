@@ -3,13 +3,14 @@
 ## ToDo
 
 - [ ] 記録の保存を二重配列化  
-- [ ] 記録のバックアップ(ファイル)  
+- [x] 記録のバックアップ(db)  
 - [ ] DBに保存  
 - [x] oha/oyasu機能(今日の記録のリセット、Result表示)
 - [x] ohayoメッセージ機能
 - [x] should_sleepの実装(寝る時間が近いときのメッセージ返答)
 - [ ] slash commands にする
 - [x] 型のアノテーションつける(つけられるっぽい）
+- [x] Bot prefixの.env化
 
 ## DB
 
@@ -67,6 +68,7 @@ yarl          1.9.4
 
 ```.env
 TOKEN = DISCORDTOKEN
+PREFIX = !
 ADMIN_UID = "000000000000000000"
 MY_UID = "000000000000000000"
 STUDY_LOG_CHANNEL_ID = "0000000000000000000"

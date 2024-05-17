@@ -6,7 +6,7 @@ import studylog
 
 
 config = dotenv_values(".env")  # config = {"USER": "foo", "EMAIL": "foo@example.org"}
-BOT_PREFIX = "!"
+BOT_PREFIX = config["PREFIX"]
 TOKEN = config["TOKEN"]
 
 intents = discord.Intents.all()
