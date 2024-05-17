@@ -105,7 +105,10 @@ class StudyLog(commands.Cog):
 
         # ToDo: logsの処理
 
-        msg = str(self.total_time[userid])
+        if userid in self.total_time :
+            msg = str(self.total_time[userid])
+        else :
+            msg = "0"
 
         return msg
 
